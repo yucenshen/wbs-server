@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { Request, Response } from 'express';
 import { PassThrough } from 'node:stream';
+import { userDto } from './dto/user.dto';
 
 @Controller()
 export class AppController {
@@ -25,19 +26,17 @@ export class AppController {
 
   @Post('register')
   async register(
-    @Body('name') name: string,
-    @Body('email') email: string,
-    @Body('password') password: string
+    // @Body('name') name: string,
+    // @Body('email') email: string,
+    // @Body('password') password: string,
+    @Body() userDto: userDto
   ) {
-    const hashPassword = await bcrypt.hash(password, 12);
-
-    const user = this.appService.create({
-      name,
-      email,
-      password: hashPassword
-    })
+    const hashPassword = await bcrypt.hash(userDto.password, 12);
+    userDto.password = hashPassword;
+    const user = await this.appService.create(userDto);
+    
     // const { password, ...result } = user; //將pwd濾掉不往前送
-    delete (await user).password;
+    delete user.password;
     return user;
   }
 
@@ -69,6 +68,7 @@ export class AppController {
     response.cookie('jwt', jwt, { httpOnly: true }); //將token存於res cookie中的jwt欄位
 
     return {
+      //TODO:ret token
       message: 'success'
     };
 
@@ -83,6 +83,7 @@ export class AppController {
   @Get('user')
   async user(@Req() request: Request) {
     try {
+      //抓header:auth....
       const cookie = request.cookies['jwt'];
       const data = await this.jwtService.verifyAsync(cookie);
 
