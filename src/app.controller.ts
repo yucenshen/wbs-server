@@ -25,16 +25,11 @@ export class AppController {
    */
 
   @Post('register')
-  async register(
-    // @Body('name') name: string,
-    // @Body('email') email: string,
-    // @Body('password') password: string,
-    @Body() userDto: userDto
-  ) {
+  async register(@Body() userDto: userDto) {
     const hashPassword = await bcrypt.hash(userDto.password, 12);
     userDto.password = hashPassword;
     const user = await this.appService.create(userDto);
-    
+  
     // const { password, ...result } = user; //將pwd濾掉不往前送
     delete user.password;
     return user;
@@ -68,7 +63,7 @@ export class AppController {
     response.cookie('jwt', jwt, { httpOnly: true }); //將token存於res cookie中的jwt欄位
 
     return {
-      //TODO:ret token
+      //todo:ret token
       message: 'success'
     };
 

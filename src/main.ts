@@ -16,8 +16,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('WBS-server api example')
     .setDescription('The API description')
-    .setVersion('1.0')
-    .addTag('') // match tags in controllers
+    .setVersion('1.0') // match tags in controllers
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('v1/api/', app, document);
