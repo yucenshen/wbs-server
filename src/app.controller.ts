@@ -53,56 +53,18 @@ export class AppController {
     if (!user) {
       throw new BadRequestException('invalid user');
     }
-
     if (!await bcrypt.compare(password, user.password)) {
       throw new BadRequestException('invalid pwd');
     }
 
     const jwt = await this.jwtService.signAsync({ id: user.id });
-
     response.cookie('jwt', jwt, { httpOnly: true }); //將token存於res cookie中的jwt欄位
 
-    return {
-      //todo:ret token
-      message: 'success'
-    };
-
-  }
-
-
-  /**
-   * @description 需要login拿到token(在res裡)才可拿取資料
-   * @param request 
-   * @returns 
-   */
-  @Get('user')
-  async user(@Req() request: Request) {
-    try {
-      //抓header:auth....
-      const cookie = request.cookies['jwt'];
-      const data = await this.jwtService.verifyAsync(cookie);
-
-      if (!data) {
-        throw new UnauthorizedException();
-      }
-
-      // {
-      //  "id": 2,
-      //  "iat": 1619588900,
-      //  "exp": 1620193700
-      //  }
-      const user = await this.appService.findOne({ id: data['id'] })
-      // {
-      // "id": 2,
-      // "name": "b",
-      // "email": "b@b.com",
-      // "password": hash pwd
-      // }
-      const { password, ...result } = user; //將pwd濾掉不往前送
-      return result;
-    } catch (e) {
-      throw new UnauthorizedException();
-    }
+    // return {
+    //   //todo:ret token
+    //   message: 'success'
+    // };
+    return jwt;
   }
 
   @Post('logout')
