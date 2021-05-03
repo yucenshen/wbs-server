@@ -3,8 +3,9 @@ import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { userDto } from 'src/dto/user.dto';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 
-@Controller('/user')
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -17,16 +18,16 @@ export class UserController {
    * @returns 
    */
    @Get()
+   @ApiCreatedResponse({description: 'User Registration'})
    async user(@Req() request: Request) {
      try {
-       //抓header:auth....
+       //todo:改成抓header:auth....
        const cookie = request.cookies['jwt'];
        const data = await this.jwtService.verifyAsync(cookie);
- 
+       
        if (!data) {
          throw new UnauthorizedException();
        }
- 
        // {"id": 2,"iat": 1619588900,"exp": 1620193700}
        const user = await this.userService.findOne({ id: data['id'] })
        // {"id": 2,"name": "b","email": "b@b.com","password": hash pwd}
